@@ -1,24 +1,31 @@
 import express from "express";
-import { listarPosts } from "../controller/postsController.js";
+import multer from "multer";
+import { listarPosts, enviarNovoPost, uploadImagem } from "../controller/postsController.js";
+
+// Configura o armazenamento padrão do Multer para salvar arquivos no diretório "./uploads"
+const upload = multer({ dest: "./uploads" });
 
 const routes = (app) => {
-    // Configura o middleware para que o servidor aceite e processe requisições no formato JSON
+    // Configura o middleware para aceitar e processar requisições no formato JSON
     app.use(express.json());
 
     // Rota para buscar todos os posts
-    // Faz uma requisição ao banco e retorna os posts em formato JSON
     app.get("/posts", listarPosts);
 
-    // Rota para buscar um post pelo ID
-    // Localiza o índice do post com base no ID fornecido e retorna o post correspondente
+    // Rota para criar um novo post
+    app.post("/posts", enviarNovoPost);
+
+    // Rota para fazer upload de uma imagem, utilizando o middleware Multer para processar o arquivo
+    app.post("/upload", upload.single("imagem"), uploadImagem);
+
     /*
+    Rota para buscar um post pelo ID
     app.get("/posts/:id", async (req, res) => {
         const result = await getTodosPosts();
-        // Busca o índice do post pelo ID
         const index = buscarPostsPorId(req.params.id);
-        // Retorna o post encontrado (ou gera erro se `posts` não estiver definido) 
         res.status(200).json(result[index]); 
-    } );
+    });
     */
-}
+};
+
 export default routes;
